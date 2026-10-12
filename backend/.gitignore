@@ -1,0 +1,5 @@
+.venv
+saved_frames
+data/
+__pycache__/
+*.log
