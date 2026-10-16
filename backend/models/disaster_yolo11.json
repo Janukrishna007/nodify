@@ -1,0 +1,46 @@
+{
+  "architecture": "YOLO11",
+  "createdAt": "2026-10-13T09:05:51.101009+00:00",
+  "classes": {
+    "0": "fire",
+    "1": "smoke",
+    "2": "flood"
+  },
+  "epochsRequested": 5,
+  "imageSize": 320,
+  "device": "cpu",
+  "dataset": "D:\\Downloads\\nodify-main\\backend\\datasets\\disaster-yolo11\\data.yaml",
+  "runDirectory": "D:\\Downloads\\nodify-main\\backend\\runs\\disaster-yolo11-cpu-2",
+  "metrics": {
+    "metrics/precision(B)": 0.4710012918182011,
+    "metrics/recall(B)": 0.46598346686685904,
+    "metrics/mAP50(B)": 0.4243828347489574,
+    "metrics/mAP50-95(B)": 0.22137619862404487,
+    "fitness": 0.22137619862404487
+  },
+  "sha256": "f7becd0f7d5a08fefefdf82da521d7544d53e16dd48947b37ef59b9ab2c64093",
+  "provenance": {
+    "labelSource": "mixed human-provided and pseudo-labeled YOLO annotations",
+    "humanReviewed": false,
+    "sources": [
+      "D:\\Downloads\\nodify-main\\backend\\datasets\\kaggle-fire-smoke\\data.yaml",
+      "D:\\Downloads\\nodify-main\\backend\\datasets\\video-bootstrap\\data.yaml"
+    ],
+    "boxCounts": {
+      "train:fire": 341,
+      "train:smoke": 295,
+      "val:fire": 364,
+      "val:smoke": 283,
+      "test:fire": 304,
+      "test:smoke": 276,
+      "train:flood": 55,
+      "val:flood": 12
+    },
+    "imageCounts": {
+      "train": 644,
+      "val": 536,
+      "test": 500
+    }
+  },
+  "releaseStatus": "bootstrap; requires human-labeled evaluation"
+}

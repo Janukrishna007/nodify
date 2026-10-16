@@ -9,7 +9,13 @@ npm.cmd ci
 npm.cmd run dev -- --hostname 127.0.0.1 --port 3000
 ```
 
-Open http://127.0.0.1:3000/upload. `/` and the old `/login` route redirect to upload; this local tool does not implement authentication.
+Open http://127.0.0.1:3000/upload for a new video or drone RTSP connection, or `/dashboard` for the overview. `/` and browser refresh open a fresh upload screen. History remains available through `/sessions`; refresh does not cancel a running analysis. The old `/login` route redirects to upload. This local tool does not implement authentication.
+
+The interface uses shadcn/ui Radix primitives with a white-and-emerald glassmorphism theme, responsive sidebar/navigation sheet, overview metrics, real detection breakdowns, a video analysis console, session search/status filters and an alert center. `/sessions?q=<filename>` supports search. `/alerts` supports acknowledgement. The video console includes saved-frame playback, class filters and downloadable reports and overlays.
+
+Browser notifications are opt-in. Enable or disable them from the analysis console or alert center; the preference persists in this browser. Disabling desktop notifications preserves the dashboard alert history.
+
+The **Drone live stream** tab posts RTSP settings to `/api/streams`. The dashboard displays connection/retry state and real detections/heatmaps while the stream runs. Only the latest 300 analyzed live frames remain in review; full-session summary counts and cumulative heatmaps remain available. Credentials are not saved in the browser or session history. Stop the current source before starting another video or stream.
 
 Uploads are sent as multipart files through the `/api/*` proxy to port 8000. `/dashboard?session=<id>` polls real saved inference results, shows progress and model boxes, supports analyzed-frame review and class filters, and displays current/cumulative heatmaps. Errors are surfaced explicitly, with no mock-data fallback. Completed results remain accessible from history.
 

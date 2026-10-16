@@ -7,7 +7,7 @@ export function BoundingBox({ detection }: { detection: Detection }) {
   return <div className='pointer-events-none absolute border-2'
     style={{ left: x1 * 100 + '%', top: y1 * 100 + '%', width: (x2 - x1) * 100 + '%', height: (y2 - y1) * 100 + '%', borderColor: colors[detection.type] }}>
     <span className='absolute left-0 top-0 whitespace-nowrap bg-black/80 px-1 py-0.5 text-[10px] text-white'>
-      {detection.type} {Math.round(detection.confidence * 100)}%
+      {detection.type} {Math.round(detection.confidence * 100)}%{detection.trackId ? ` · ${detection.trackId}` : ''}
     </span>
   </div>;
 }

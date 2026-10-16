@@ -1,10 +1,10 @@
 import type { DisasterType, Filters as FilterState } from '@/lib/state';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 
 export function Filters({ filters, onToggle }: { filters: FilterState; onToggle: (key: DisasterType) => void }) {
-  return <div className='flex flex-wrap gap-2'>
-    {(['fire', 'smoke', 'flood'] as const).map((key) => <button key={key} onClick={() => onToggle(key)} aria-pressed={filters[key]}
-      className={filters[key] ? 'rounded-full border border-white/25 bg-white/15 px-3 py-1 text-xs capitalize' : 'rounded-full border border-white/10 px-3 py-1 text-xs capitalize text-white/40'}>
-      {key}
-    </button>)}
-  </div>;
+  return <ToggleGroup type='multiple' variant='outline' size='sm' aria-label='Filter disaster classes'
+    value={(Object.keys(filters) as DisasterType[]).filter((key) => filters[key])}
+    onValueChange={(values) => { for (const key of ['fire', 'smoke', 'flood'] as const) if (values.includes(key) !== filters[key]) onToggle(key); }}>
+    {(['fire', 'smoke', 'flood'] as const).map((key) => <ToggleGroupItem key={key} value={key} aria-label={key}><span className='capitalize'>{key}</span></ToggleGroupItem>)}
+  </ToggleGroup>;
 }

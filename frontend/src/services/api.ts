@@ -9,7 +9,9 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
   }
   if (!response.ok) {
     const body = await response.json().catch(() => null);
-    throw new Error(typeof body?.detail === 'string' ? body.detail : `Analysis server returned ${response.status}.`);
+    const detail = typeof body?.detail === 'string' ? body.detail
+      : Array.isArray(body?.detail) ? body.detail.map((issue: { msg?: string }) => issue.msg).filter(Boolean).join(' · ') : '';
+    throw new Error(detail || `Analysis server returned ${response.status}.`);
   }
   return response.json() as Promise<T>;
 }
@@ -49,4 +51,10 @@ export const fetchSession = (id: string) => request<Session>(`/api/sessions/${en
 export const fetchFrame = (id: string, index: number) => request<FrameData>(`/api/sessions/${encodeURIComponent(id)}/frames/${index}`);
 export const cancelAnalysis = (id: string) => request<{ ok: boolean }>(`/api/sessions/${encodeURIComponent(id)}/cancel`, { method: 'POST' });
 export const checkBackend = () => request<{ ok: boolean; activeSession: string | null }>('/api/health');
+export type StreamSettings = { url: string; name: string; username: string; password: string; frame_skip: number; confidence: number };
+export const startStream = (settings: StreamSettings) => request<Session>('/api/streams', {
+  method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(settings),
+});
+export const acknowledgeAlert = (sessionId: string, alertId: string) =>
+  request<import('@/lib/state').DisasterAlert>(`/api/sessions/${encodeURIComponent(sessionId)}/alerts/${encodeURIComponent(alertId)}/acknowledge`, { method: 'POST' });
 

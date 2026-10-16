@@ -1,4 +1,6 @@
 .logs/
+.cache/
+runs/
 
 # Local credentials
 .env
