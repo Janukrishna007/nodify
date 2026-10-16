@@ -1,5 +1,19 @@
 $ErrorActionPreference = 'Stop'
 $nodifyRoot = $PSScriptRoot
+$nodifyCache = Join-Path $nodifyRoot '.cache'
+$nodifyTemp = Join-Path $nodifyCache 'tmp'
+New-Item -ItemType Directory -Path $nodifyTemp -Force | Out-Null
+New-Item -ItemType Directory -Path (Join-Path $nodifyCache 'ultralytics\Ultralytics') -Force | Out-Null
+$env:TEMP = $nodifyTemp
+$env:TMP = $nodifyTemp
+$env:TORCH_HOME = Join-Path $nodifyCache 'torch'
+$env:YOLO_CONFIG_DIR = Join-Path $nodifyCache 'ultralytics'
+$env:PIP_CACHE_DIR = Join-Path $nodifyCache 'pip'
+$env:UV_CACHE_DIR = Join-Path $nodifyCache 'uv'
+$env:npm_config_cache = Join-Path $nodifyCache 'npm'
+$env:MPLCONFIGDIR = Join-Path $nodifyCache 'matplotlib'
+$env:XDG_CACHE_HOME = Join-Path $nodifyCache 'xdg'
+$env:PYTHONPYCACHEPREFIX = Join-Path $nodifyCache 'pycache'
 $nodifyBackend = Join-Path $nodifyRoot 'backend'
 $nodifyFrontend = Join-Path $nodifyRoot 'frontend'
 $nodifyPython = Join-Path $nodifyBackend '.venv\Scripts\python.exe'

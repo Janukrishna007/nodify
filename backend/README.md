@@ -1,5 +1,17 @@
 # DisasterVision analysis backend
 
+The analysis loop performs YOLO detection, class-separated ByteTrack association, bounding-box rendering, disaster classification, grid intensity mapping, and persistent alert creation. Dashboard and browser alerts work without external services. Email delivery is enabled when `ALERT_SMTP_HOST`, `ALERT_EMAIL_FROM`, and `ALERT_EMAIL_TO` are present; copy `.env.example` to `.env` and fill in the SMTP values. The backend loads that ignored local file at startup.
+
+The preferred checkpoint is `models/disaster_yolo11.pt`. If it is absent, the backend loads the verified legacy fire/smoke/flood YOLOv8 ensemble. Training commands:
+
+```powershell
+python prepare_dataset.py inventory
+python prepare_dataset.py merge --configs path\to\fire\data.yaml path\to\flood\data.yaml --output datasets\disaster-yolo11
+python train_yolo11.py --data datasets\disaster-yolo11\data.yaml --epochs 50 --imgsz 640
+```
+
+The training script publishes weights only after validation completes and writes matching JSON metadata beside the checkpoint.
+
 `main.py` is the runnable FastAPI service. `annotate_and_track.py` is a separate manual-annotation experiment and is not needed by the dashboard.
 
 ## Run on Windows
@@ -36,6 +48,7 @@ Heatmaps use camera-frame coordinates. The cumulative grid is temporal evidence 
 
 ## API
 
+- `POST /api/streams`: start live RTSP analysis with JSON `{ "url": "rtsp://192.168.1.10:554/live", "name": "Drone", "username": "", "password": "", "frame_skip": 3, "confidence": 0.45 }`. Returns a queued session (202). Credentials/full URL are used only in memory.
 - `GET /api/health`: available models, active session, grid.
 - `GET /api/sessions`: saved analysis history.
 - `GET /api/sessions/{id}`: progress, counts, latest index, cumulative cells, errors.
@@ -62,4 +75,16 @@ Only one analysis runs at a time; a concurrent start returns HTTP 409. Missing w
 
 The smoke test creates a 30-frame clip, uploads it through the frontend proxy, checks sample indices, waits for real inference, validates reports and decoded heatmap images, and rejects an invalid video. The browser test uses installed Microsoft Edge and uploads that clip through the UI, verifies frame navigation, filters, heatmap toggling, download, and refresh.
 
+For the RTSP browser check, publish the validation clip to a local RTSP server at `rtsp://127.0.0.1:18554/drone`, then run `python browser_live_test.py`. It verifies stream inference/images, credential privacy, refresh, stop, and uploading the next video. It requires a real RTSP publisher; it does not simulate successful camera connections.
+
 Implementation references: [Ultralytics prediction API](https://docs.ultralytics.com/modes/predict/), [FastAPI file uploads](https://fastapi.tiangolo.com/tutorial/request-files/).
+
+## RTSP behaviour
+
+`live.py` ingests RTSP through OpenCV's FFmpeg backend over TCP. Open/read timeouts are 8 seconds and failed connections retry three times with backoff. A reader thread retains only the latest sampled frame so slow inference does not accumulate a stale playback queue. The analysis loop uses the same detector, tracking, scoring, images and alerts as file uploads. Connection state and dropped-sample counts appear in the session API. A stop interrupts waiting and closes the decoder within its I/O timeout.
+
+Live review stores the last 300 analyzed frames and 500 alerts. `oldestFrameIndex` is the lower available index; lifetime analyzed counts and cumulative cells remain intact. Reports include available frames only. Restarted streams are marked interrupted and must be connected again; credentials are never persisted. Camera-frame heatmaps are not georeferenced drone maps.
+
+The frontend starts at `/upload` and returns there on browser refresh, without cancelling active jobs. History links still open saved results. For detailed receiver setup, see the root README. Validate stream retry/backpressure with `python -m unittest test_live -v`.
+
+Timeout reference: [OpenCV video I/O properties](https://docs.opencv.org/4.x/d4/d15/group__videoio__flags__base.html).

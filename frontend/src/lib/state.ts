@@ -4,7 +4,14 @@ export type DisasterType = 'fire' | 'smoke' | 'flood';
 export type Filters = Record<DisasterType, boolean>;
 export type Detection = {
   id: string; type: DisasterType; confidence: number; weight: number;
-  box: [number, number, number, number]; sourceModel: string;
+  box: [number, number, number, number]; sourceModel: string; trackId?: string | null;
+};
+export type Intensity = 'none' | 'low' | 'moderate' | 'high' | 'critical';
+export type DisasterAlert = {
+  id: string; sessionId: string; type: DisasterType; severity: Exclude<Intensity, 'none'>;
+  risk: number; confidence: number; timestamp: number; frameNumber: number; trackIds: string[];
+  createdAt: string; acknowledgedAt: string | null; message: string;
+  emailStatus: 'pending' | 'sent' | 'failed' | 'not_configured'; emailError?: string;
 };
 export type Cell = {
   row: number; col: number; score: number; risk: number; cumulativeRisk: number;
@@ -13,7 +20,8 @@ export type Cell = {
 export type FrameData = {
   index: number; frameNumber: number; timestamp: number; width: number; height: number;
   detections: Detection[]; cells: Cell[]; imageUrl: string; heatmapUrl: string;
-  cumulativeUrl: string; inferenceMs: number;
+  cumulativeUrl: string; inferenceMs: number; annotatedUrl: string; disasterClasses: DisasterType[];
+  intensity: { level: Intensity; risk: number }; alerts: DisasterAlert[];
 };
 export type Zone = Cell & { id: string; type: string; severity: number };
 export type Session = {
@@ -22,8 +30,12 @@ export type Session = {
   analyzedFrames: number; latestIndex: number | null; progress: number;
   totalFrames?: number; framesRead?: number; fps?: number; expectedSamples?: number;
   detectionCounts: Partial<Record<DisasterType, number>>; error: string | null;
+  uniqueTrackCounts?: Partial<Record<DisasterType, number>>; tracker?: string; alerts?: DisasterAlert[];
   elapsedSeconds?: number; grid: { rows: number; cols: number };
   cumulativeCells?: Cell[];
+  sourceType?: 'upload' | 'rtsp'; isLive?: boolean; sourceAddress?: string;
+  connectionState?: 'connecting' | 'connected' | 'reconnecting' | 'disconnected';
+  reconnectAttempts?: number; oldestFrameIndex?: number; retainedFrameLimit?: number; droppedSamples?: number;
 };
 
 export function cellRisk(cell: Cell, filters: Filters, cumulative = false) {

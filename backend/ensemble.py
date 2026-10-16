@@ -39,6 +39,7 @@ Usage
 import threading
 import time
 import logging
+import os
 from pathlib import Path
 from dataclasses import dataclass
 from typing import Optional
@@ -124,6 +125,16 @@ MODEL_REGISTRY = [
 ]
 
 
+def active_model_registry():
+    """A published YOLO11 checkpoint takes precedence over the legacy ensemble."""
+    checkpoint = Path(os.environ.get("DISASTER_MODEL_PATH", str(Path(__file__).parent / "models" / "disaster_yolo11.pt")))
+    if checkpoint.is_file():
+        return [{"name": "disaster_yolo11", "path": str(checkpoint.resolve()), "enabled": True}]
+    if "DISASTER_MODEL_PATH" in os.environ:
+        raise FileNotFoundError(f"Configured disaster checkpoint missing: {checkpoint}")
+    return MODEL_REGISTRY
+
+
 # ─── Detection dataclass ──────────────────────────────────────────────────────
 @dataclass
 class Detection:
@@ -134,6 +145,7 @@ class Detection:
     raw_class:    str            # original class name from the model
     source_model: str            # which model produced this detection
     weight:       float          # CLASS_WEIGHTS[unified_id]
+    track_id:     Optional[str] = None
 
 
 # ─── Single-model wrapper ─────────────────────────────────────────────────────
@@ -302,7 +314,7 @@ class EnsembleDetector:
 
     def load(self, registry: list[dict] = None):
         """Load all enabled models from the registry."""
-        registry = registry or MODEL_REGISTRY
+        registry = registry if registry is not None else active_model_registry()
         self.models = []
 
         for entry in registry:
@@ -406,7 +418,7 @@ class EnsembleDetector:
         for d in detections:
             x1, y1, x2, y2 = [int(v) for v in d.box]
             color = COLOR_MAP.get(d.unified_id, (255, 255, 255))
-            label = f"{d.class_name} {d.confidence:.2f}"
+            label = f"{d.class_name} {d.confidence:.2f}" + (f" #{d.track_id}" if d.track_id else "")
 
             cv2.rectangle(out, (x1, y1), (x2, y2), color, 2)
             # Background for text

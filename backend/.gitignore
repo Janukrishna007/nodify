@@ -3,3 +3,6 @@ saved_frames
 data/
 __pycache__/
 *.log
+datasets/
+runs/
+yolo11*.pt

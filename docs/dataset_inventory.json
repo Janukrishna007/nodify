@@ -1,0 +1,115 @@
+{
+  "datasetReferences": [
+    {
+      "source": "Kaggle",
+      "id": "sayedgamal99/smoke-fire-detection-yolo",
+      "notebook": "TEMPLATE/kaggle.ipynb"
+    },
+    {
+      "source": "Roboflow",
+      "workspace": "ai-yolo-detection",
+      "project": "drone-flood-detection-abdic-o5a73",
+      "version": 1,
+      "notebook": "TEMPLATE/roboflow_flood.ipynb"
+    },
+    {
+      "source": "Roboflow",
+      "workspace": "long-nguyen-hoang-9ecmq",
+      "project": "flood-4oe1x",
+      "version": 1,
+      "notebook": "TEMPLATE/roboflow_flood1.ipynb"
+    }
+  ],
+  "datasetConfigs": [
+    {
+      "path": "backend\\datasets\\disaster-yolo11\\data.yaml",
+      "bytes": 156
+    },
+    {
+      "path": "backend\\datasets\\kaggle-fire-smoke\\data.yaml",
+      "bytes": 399
+    },
+    {
+      "path": "backend\\datasets\\video-bootstrap\\data.yaml",
+      "bytes": 137
+    }
+  ],
+  "checkpoints": [
+    {
+      "path": ".cache\\models\\yolo11n.pt",
+      "bytes": 5613764
+    },
+    {
+      "path": "backend\\models\\disaster_yolo11.pt",
+      "bytes": 5422362
+    },
+    {
+      "path": "backend\\models_light\\best_flood.pt",
+      "bytes": 6234602
+    },
+    {
+      "path": "backend\\models_light\\fire_and_smoke_3.pt",
+      "bytes": 6223338
+    },
+    {
+      "path": "backend\\models_light\\fire_smoke_8k_L.pt",
+      "bytes": 87647802
+    },
+    {
+      "path": "backend\\models_light\\not-that-best_flood.pt",
+      "bytes": 6246634
+    },
+    {
+      "path": "backend\\models_light\\smoke_fire_roboflow.pt",
+      "bytes": 6249194
+    },
+    {
+      "path": "TEMPLATE\\smoke-fire-wsde7_best(roboflow).pt",
+      "bytes": 6249194
+    }
+  ],
+  "videos": [
+    {
+      "path": "backend\\9_11.mp4.webm",
+      "bytes": 70217207,
+      "decodable": true,
+      "frames": 5172,
+      "fps": 59.94006309148265
+    },
+    {
+      "path": "backend\\disaster_footage.mp4",
+      "bytes": 48,
+      "decodable": false,
+      "frames": 0,
+      "fps": 0.0
+    },
+    {
+      "path": "backend\\disaster_footage.mp4.webm",
+      "bytes": 1076694,
+      "decodable": true,
+      "frames": 342,
+      "fps": 30.0
+    },
+    {
+      "path": "backend\\disaster_footage_fixed.mp4",
+      "bytes": 4017821,
+      "decodable": true,
+      "frames": 340,
+      "fps": 30.0
+    },
+    {
+      "path": "backend\\flood_footage.mp4.webm",
+      "bytes": 23291337,
+      "decodable": true,
+      "frames": 2241,
+      "fps": 25.0
+    },
+    {
+      "path": "backend\\tracked_output.mp4",
+      "bytes": 30408748,
+      "decodable": false,
+      "frames": 0,
+      "fps": 0.0
+    }
+  ]
+}

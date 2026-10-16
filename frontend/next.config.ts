@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  devIndicators: false,
   turbopack: { root: __dirname },
   experimental: {
     // Allow a 500 MB video plus multipart headers through the API rewrite.
